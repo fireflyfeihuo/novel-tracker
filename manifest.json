@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "小说追踪器",
+  "version": "0.1.0",
+  "description": "追踪多平台小说的连载状态、字数、最新章节",
+  "permissions": ["storage", "unlimitedStorage", "alarms", "scripting", "tabs"],
+  "host_permissions": [
+    "*://*.qidian.com/*",
+    "*://*.fanqienovel.com/*",
+    "*://*.ciweimao.com/*",
+    "*://*.shaoniandream.com/*",
+    "*://*.nkwwlkj.cn/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_title": "打开小说追踪器"
+  }
+}

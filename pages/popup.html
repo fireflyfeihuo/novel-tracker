@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>我的小说书架</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <input id="url" placeholder="粘贴书籍网址...">
+    <button id="add">添加书籍</button>
+    <button id="import-btn">批量导入</button>
+    <button id="refresh">全部更新</button>
+    <input type="file" id="import-files" accept=".html,.htm,.txt" multiple hidden>
+  </div>
+
+  <div id="import-result" class="import-result" hidden></div>
+
+  <div class="toolbar">
+    <div class="filter-group" id="platform-filter" data-label="网站"></div>
+    <div class="filter-group" id="status-filter" data-label="状态"></div>
+    <div class="view-toggle">
+      <button id="view-grid" title="平铺显示">▦ 平铺</button>
+      <button id="view-list" title="列表显示">☰ 列表</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <div id="empty-tip" class="empty-tip" hidden>没有符合条件的书籍</div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
