@@ -1,10 +1,11 @@
 // 注意：此函数会被序列化注入页面，内部不能引用外部变量
 export function parseCiweimao() {
   const text = document.body.innerText;
-  const result = {
+const result = {
     title: null, author: null, status: null,
-    wordCount: null, latestChapter: null, latestUpdateTime: null
-  };
+    wordCount: null, chapterText: null, agoText: null
+};
+
 
   // 书名 h1.title
   const titleEl = document.querySelector('.book-info h1.title');
@@ -46,9 +47,10 @@ export function parseCiweimao() {
     // 匹配章节名 和 时间
     const chMatch = timeText.match(/^(.*?)\s*\[\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s*\]/);
     if (chMatch) {
-      result.latestChapter = chMatch[1].trim();
-      const rawTime = chMatch[2];
-      result.latestUpdateTime = rawTime.replace(' ', 'T') + '+08:00';
+result.chapterText = chMatch[1].trim();
+const rawTime = chMatch[2];
+result.agoText = rawTime;
+
     }
   }
 

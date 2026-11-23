@@ -3,6 +3,7 @@ import { parseFanqie } from './fanqie.js';
 import { parseCiweimao } from './ciweimao.js';
 import { parseShaonianmeng } from './shaonianmeng.js';
 import { parseDuyuedu } from './duyuedu.js';
+import { parseXirang } from './xirang.js'; // ✅新增
 
 const PARSERS = {
   qidian: parseQidian,
@@ -10,6 +11,7 @@ const PARSERS = {
   ciweimao: parseCiweimao,
   shaonianmeng: parseShaonianmeng,
   duyuedu:parseDuyuedu,
+  xirang: parseXirang, // ✅新增
 };
 
 export function getParser(platform) {
@@ -34,6 +36,6 @@ export function detectPlatform(url) {
   if (url.includes('ciweimao.com')) return 'ciweimao';
   if (url.includes('shaoniandream')) return 'shaonianmeng';
   if (url.includes('nkwwlkj.cn')) return 'duyuedu';
-  // 删除这一行： if (url.includes('xr.unionread.net')) return 'xirang';
+if (url.includes('unionread.net'))  return 'xirang'; // ✅联合阅读域名
   return 'unknown';
 }

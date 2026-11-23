@@ -1,5 +1,5 @@
-// 注意！这个函数不在网页中执行！运行在service‑worker，接收页面抓取的innerText文本
-export function parseXirangFromText(pageText) {
+// 注入页面执行，不能引入外部变量
+export function parseXirang() {
   const result = {
     title: null,
     author: null,
@@ -9,48 +9,46 @@ export function parseXirangFromText(pageText) {
     agoText: null
   };
 
-  // 书名
-  const titleMatch = pageText.match(/(.+?)\s+ID:\s*\d+/);
-  if(titleMatch){
-    result.title = titleMatch[1].trim();
+  // 书名：.novel_name
+  const titleEl = document.querySelector('.novel_name span');
+  if (titleEl) {
+    // 去掉后面的 "ID: 112666" 这类后缀
+    result.title = titleEl.textContent.trim().replace(/\s*ID[:：]\s*\d+$/, '');
   }
-  // 作者
-  const authorMatch = pageText.match(/作者[:：]\s*([^\n\r【\]]+)/);
-  if(authorMatch){
-    result.author = authorMatch[1].trim();
-  }
-  // 状态
-  if(pageText.includes('连载中')) result.status = '连载中';
-  else if(pageText.includes('完结')) result.status = '已完结';
 
-  // 最新章节+时间
-  const latestReg = /最新章节\s+(.+?)\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/;
-  const latestMatch = pageText.match(latestReg);
-  if(latestMatch){
-    result.chapterText = latestMatch[1].trim();
-    const timeStr = latestMatch[2].trim();
-    result.agoText = formatAbsTimeToAgo(timeStr);
+  // 作者：.novel_author span（作者：xxx）
+  const authorEl = document.querySelector('.novel_author span');
+  if (authorEl) {
+    result.author = authorEl.textContent.replace(/^作者[:：]\s*/, '').trim();
   }
-  // 字数
-  const wordReg = /([\d\.]+)\s*万\s*字/;
-  const wordMatch = pageText.match(wordReg);
-  if(wordMatch){
-    result.wordCount = `${wordMatch[1]} 万字`;
+
+  // 连载状态：.novelprosess
+  const statusEl = document.querySelector('.novel_type.novelprosess');
+  if (statusEl) {
+    const s = statusEl.textContent.trim();
+    if (s.includes('连载')) result.status = '连载中';
+    else if (s.includes('完结')) result.status = '已完结';
+    else result.status = s;
+  }
+
+  // 最新章节：.newcname
+  const chapEl = document.querySelector('.newcname');
+  if (chapEl) {
+    result.chapterText = chapEl.textContent.trim();
+  }
+
+  // 更新时间：.update_time
+  const timeEl = document.querySelector('.update_time');
+  if (timeEl) {
+    result.agoText = timeEl.textContent.trim();
+  }
+
+  // 字数：count_list 里面的 199.59万
+  const countText = document.querySelector('.count_list')?.textContent || '';
+  const wordMatch = countText.match(/(\d+(?:\.\d+)?)\s*万/);
+  if (wordMatch) {
+    result.wordCount = wordMatch[0] + '字';
   }
 
   return result;
-}
-
-function formatAbsTimeToAgo(timeStr) {
-  const target = new Date(timeStr).getTime();
-  const now = Date.now();
-  const diffMs = now - target;
-  if (diffMs < 0) return '刚刚';
-  const diffHour = diffMs / (1000 * 60 * 60);
-  const diffDay = diffHour / 24;
-  if (diffDay >= 1) {
-    return `${Math.floor(diffDay)} 天前`;
-  } else {
-    return `${Math.floor(diffHour)} 小时前`;
-  }
 }

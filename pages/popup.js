@@ -7,6 +7,7 @@ const platformNames = {
   ciweimao: '刺猬猫',
   shaonianmeng: '少年梦',
   duyuedu: '独阅读',
+  xirang: '联合阅读',
   unknown: '未知平台'
 };
 
@@ -17,11 +18,12 @@ function detectPlatformLocal(url) {
   if (url.includes('ciweimao.com')) return 'ciweimao';
   if (url.includes('shaoniandream')) return 'shaonianmeng';
   if (url.includes('nkwwlkj.cn')) return 'duyuedu';
+  if (url.includes('unionread.net')) return 'xirang';
   return 'unknown';
 }
 
 // 固定列出的平台筛选项（顺序即展示顺序）
-const platformOptions = ['qidian', 'fanqie', 'ciweimao', 'shaonianmeng', 'duyuedu'];
+const platformOptions = ['qidian', 'fanqie', 'ciweimao', 'shaonianmeng', 'duyuedu','xirang'];
 const statusOptions = [
   { key: 'all', label: '全部' },
   { key: '连载', label: '连载' },

@@ -1,22 +1,25 @@
 // 注意：此函数会被序列化注入页面，内部不能引用外部变量
 export function parseFanqie() {
-  const text = document.body.innerText;
   const result = {
-    title: null, author: null, status: null,
-    wordCount: null, latestChapter: null, latestUpdateTime: null
+    title: null,
+    author: null,
+    status: null,
+    wordCount: null,
+    chapterText: null,
+    agoText: null
   };
 
-  // 书名 h1
+  // 书名
   const titleEl = document.querySelector('.info-name h1');
   if (titleEl) result.title = titleEl.textContent.trim();
 
-  // 作者（根据截图：.author-name-text）
+  // 作者
   const authorEl = document.querySelector('.author-name-text');
   if (authorEl) {
     result.author = authorEl.textContent.trim();
   }
 
-  // 状态：info-label-yellow 黄色标签（连载中）
+  // 状态标签
   const statusEl = document.querySelector('.info-label-yellow');
   if (statusEl) {
     const statusText = statusEl.textContent.trim();
@@ -30,22 +33,22 @@ export function parseFanqie() {
   }
 
   // 字数
-  const wordMatch = text.match(/(\d+(?:\.\d+)?)\s*万字/);
-  if (wordMatch) result.wordCount = wordMatch[0];
-
-  // 最新章节
-  const chapterEl = document.querySelector('.info-last .chapter-item-title');
-  if (chapterEl) {
-    result.latestChapter = chapterEl.textContent.trim();
+  const wordEl = document.querySelector('.info-count-word .detail');
+  if (wordEl) {
+    result.wordCount = wordEl.textContent.trim() + '万字';
   }
 
-  // 更新时间，转为和起点一样的 ISO+08:00 格式
+  // ========= 重点：从截图里的选择器拿最新章节、时间 =========
+  const chapEl = document.querySelector('.info-last-title');
+  if (chapEl) {
+    let chapRaw = chapEl.textContent.trim();
+    // 去掉开头的“最近更新：”
+    chapRaw = chapRaw.replace(/^最近更新[:：]\s*/, '');
+    result.chapterText = chapRaw;
+  }
   const timeEl = document.querySelector('.info-last-time');
   if (timeEl) {
-    const timeText = timeEl.textContent.trim();
-    if (timeText) {
-      result.latestUpdateTime = timeText.replace(' ', 'T') + '+08:00';
-    }
+    result.agoText = timeEl.textContent.trim();
   }
 
   return result;

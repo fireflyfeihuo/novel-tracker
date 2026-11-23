@@ -2,10 +2,13 @@
 export function parseQidian() {
   const text = document.body.innerText;
   const result = {
-    title: null, author: null, status: null,
-    wordCount: null, latestChapter: null, latestUpdateTime: null
+    title: null,
+    author: null,
+    status: null,
+    wordCount: null,
+    chapterText: null,
+    agoText: null
   };
-
   // 书名
   const titleEl = document.querySelector('#bookName');
   if (titleEl) result.title = titleEl.textContent.trim();
@@ -16,7 +19,7 @@ export function parseQidian() {
     result.author = authorEl.textContent.replace(/^作者[:：]\s*/, '').trim();
   }
 
-  // 【关键修改】连载状态：精确定位到 .book-attribute 的第一个 span
+  // 连载状态
   const statusEl = document.querySelector('.book-attribute span:first-child');
   if (statusEl) {
     const statusText = statusEl.textContent.trim();
@@ -33,19 +36,18 @@ export function parseQidian() {
   const wordMatch = text.match(/(\d+(?:\.\d+)?)\s*万字/);
   if (wordMatch) result.wordCount = wordMatch[0];
 
-  // 最新章节（去掉“最新章节：”前缀）
-  const chapterEl = document.querySelector('.book-info .book-latest-chapter');
-  if (chapterEl) {
-    result.latestChapter = chapterEl.textContent.replace(/^最新章节[:：]\s*/, '').trim();
-  }
-
-  // 更新时间（去掉“更新时间:”前缀，转为 ISO 格式）
-  const timeEl = document.querySelector('.book-info .update-time');
-  if (timeEl) {
-    const timeText = timeEl.textContent.replace(/^更新时间[:：]\s*/, '').trim();
-    if (timeText) {
-      result.latestUpdateTime = timeText.replace(' ', 'T') + '+08:00';
-    }
+  // =====【新版起点：全文文本正则抓取最新章节 + 更新时间】=====
+  // 匹配样例文本：最新章节：第123章 xxx · 2026‑11‑22 18:30
+  const latestMatch = text.match(/最新章节[:：]\s*(.+?)\s*·\s*(\d{4}-\d{1,2}-\d{1,2}\s+\d{1,2}:\d{1,2})/);
+  if(latestMatch){
+    result.chapterText = latestMatch[1].trim();
+    // 把绝对时间转为 agoText 格式交给 applyUpdate 处理
+    const timeStr = latestMatch[2];
+    result.agoText = timeStr;
+  }else{
+    // 降级：只抓章节名，无时间
+    const chapOnly = text.match(/最新章节[:：]\s*([^\n·]+)/);
+    if(chapOnly) result.chapterText = chapOnly[1].trim();
   }
 
   return result;
